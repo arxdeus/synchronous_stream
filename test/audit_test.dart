@@ -35,8 +35,7 @@ void main() {
         });
 
         void listen() {
-          subscription = transformed
-              .listen(emittedValues.add, onError: errors.add, onDone: () {
+          subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
             isDone = true;
           });
         }
@@ -98,8 +97,7 @@ void main() {
           });
         });
 
-        test('does not starve output if many values come closer than duration',
-            () {
+        test('does not starve output if many values come closer than duration', () {
           fakeAsync((async) {
             listen();
             values.add(1);

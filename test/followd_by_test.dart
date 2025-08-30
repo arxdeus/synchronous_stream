@@ -86,7 +86,8 @@ void main() {
         });
 
         if (firstType == 'single subscription') {
-          test('cancels any type of second stream on cancel if first is '
+          test(
+              'cancels any type of second stream on cancel if first is '
               'broadcast', () async {
             await first.close();
             await subscription.cancel();

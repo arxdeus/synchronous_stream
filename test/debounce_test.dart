@@ -35,8 +35,7 @@ void main() {
         });
 
         void listen() {
-          subscription = transformed
-              .listen(emittedValues.add, onError: errors.add, onDone: () {
+          subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
             isDone = true;
           });
         }
@@ -123,8 +122,8 @@ void main() {
           values = createController(streamType);
           emittedValues = [];
           isDone = false;
-          transformed = values.stream.debounce(const Duration(milliseconds: 5),
-              leading: true, trailing: false);
+          transformed = values.stream
+              .debounce(const Duration(milliseconds: 5), leading: true, trailing: false);
         });
 
         void listen() {
@@ -169,8 +168,7 @@ void main() {
           });
         }
 
-        test('closes output immediately if not waiting for trailing value',
-            () async {
+        test('closes output immediately if not waiting for trailing value', () async {
           listen();
           values.add(1);
           await values.close();
@@ -186,8 +184,8 @@ void main() {
         setUp(() async {
           values = createController(streamType);
           emittedValues = [];
-          transformed = values.stream.debounce(const Duration(milliseconds: 5),
-              leading: true, trailing: true);
+          transformed = values.stream
+              .debounce(const Duration(milliseconds: 5), leading: true, trailing: true);
         });
         void listen() {
           transformed.listen(emittedValues.add);
@@ -244,8 +242,7 @@ void main() {
           values = createController(streamType);
           emittedValues = [];
           errors = [];
-          transformed =
-              values.stream.debounceBuffer(const Duration(milliseconds: 5));
+          transformed = values.stream.debounceBuffer(const Duration(milliseconds: 5));
         });
         void listen() {
           transformed.listen(emittedValues.add, onError: errors.add);
@@ -265,8 +262,7 @@ void main() {
           });
         });
 
-        test('separate lists for multiple values spaced further than duration',
-            () {
+        test('separate lists for multiple values spaced further than duration', () {
           fakeAsync((async) {
             listen();
             values.add(1);

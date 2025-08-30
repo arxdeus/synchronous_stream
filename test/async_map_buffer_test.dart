@@ -31,15 +31,13 @@ void main() {
     );
     workArgument = values;
     finishWork = Completer.sync()
-      ..future
-          .then((_) {
-            workArgument = null;
-            finishWork = null;
-          })
-          .catchError((_) {
-            workArgument = null;
-            finishWork = null;
-          });
+      ..future.then((_) {
+        workArgument = null;
+        finishWork = null;
+      }).catchError((_) {
+        workArgument = null;
+        finishWork = null;
+      });
     return finishWork!.future;
   }
 

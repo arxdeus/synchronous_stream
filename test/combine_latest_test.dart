@@ -77,9 +77,7 @@ void main() {
       int sum(int a, int b) => a + b;
 
       var done = false;
-      source.stream
-          .combineLatest(other.stream, sum)
-          .listen(null, onDone: () => done = true);
+      source.stream.combineLatest(other.stream, sum).listen(null, onDone: () => done = true);
 
       source.add(1);
 
@@ -101,9 +99,7 @@ void main() {
         int sum(int a, int b) => a + b;
 
         var done = false;
-        source
-            .combineLatest(other.stream, sum)
-            .listen(null, onDone: () => done = true);
+        source.combineLatest(other.stream, sum).listen(null, onDone: () => done = true);
 
         await Future(() {});
         // Nothing can ever be emitted on the result, may as well close.
@@ -118,9 +114,7 @@ void main() {
       int sum(int a, int b) => a + b;
 
       var done = false;
-      source.stream
-          .combineLatest(other, sum)
-          .listen(null, onDone: () => done = true);
+      source.stream.combineLatest(other, sum).listen(null, onDone: () => done = true);
 
       await Future(() {});
       // Nothing can ever be emitted on the result, may as well close.
@@ -133,9 +127,7 @@ void main() {
       int sum(int a, int b) => throw _NumberedException(3);
 
       var errors = <Object>[];
-      source.stream
-          .combineLatest(other.stream, sum)
-          .listen(null, onError: errors.add);
+      source.stream.combineLatest(other.stream, sum).listen(null, onError: errors.add);
 
       source.addError(_NumberedException(1));
       other.addError(_NumberedException(2));

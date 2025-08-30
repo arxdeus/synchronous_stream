@@ -83,8 +83,7 @@ void main() {
 
     test('S10: onListen called once', () async {
       var count = 0;
-      final c = SynchronousDispatchStreamController<int>()
-        ..onListen = () => count++;
+      final c = SynchronousDispatchStreamController<int>()..onListen = () => count++;
       c.stream.listen((_) {});
       await c.close();
       expect(count, 1);
@@ -92,8 +91,7 @@ void main() {
 
     test('S11: onCancel called when subscription canceled', () async {
       var canceled = false;
-      final c = SynchronousDispatchStreamController<int>()
-        ..onCancel = () => canceled = true;
+      final c = SynchronousDispatchStreamController<int>()..onCancel = () => canceled = true;
       final sub = c.stream.listen((_) {});
       await sub.cancel();
       await c.close();
@@ -276,8 +274,7 @@ void main() {
 
     test('B7: onListen called once on first subscriber', () async {
       var count = 0;
-      final c = SynchronousDispatchStreamController<int>.broadcast()
-        ..onListen = () => count++;
+      final c = SynchronousDispatchStreamController<int>.broadcast()..onListen = () => count++;
       c.stream.listen((_) {});
       c.stream.listen((_) {});
       await c.close();
@@ -286,8 +283,7 @@ void main() {
 
     test('B8: onCancel called when last subscriber cancels', () async {
       var calls = 0;
-      final c = SynchronousDispatchStreamController<int>.broadcast()
-        ..onCancel = () => calls++;
+      final c = SynchronousDispatchStreamController<int>.broadcast()..onCancel = () => calls++;
       final a = c.stream.listen((_) {});
       final b = c.stream.listen((_) {});
       await a.cancel();

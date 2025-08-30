@@ -16,8 +16,8 @@ void main() {
       final first = SynchronousDispatchStreamController<String>();
       final second = SynchronousDispatchStreamController<String>();
       final third = SynchronousDispatchStreamController<String>();
-      final combined = first.stream.combineLatestAll(
-          [second.stream, third.stream]).map((data) => data.join());
+      final combined =
+          first.stream.combineLatestAll([second.stream, third.stream]).map((data) => data.join());
 
       // first:    a----b------------------c--------d---|
       // second:   --1---------2-----------------|
@@ -73,8 +73,7 @@ void main() {
     test('forwards errors', () async {
       final first = SynchronousDispatchStreamController<String>();
       final second = SynchronousDispatchStreamController<String>();
-      final combined = first.stream
-          .combineLatestAll([second.stream]).map((data) => data.join());
+      final combined = first.stream.combineLatestAll([second.stream]).map((data) => data.join());
 
       // first:    -a---------|
       // second:   ----1---#
@@ -94,8 +93,7 @@ void main() {
       final second = SynchronousDispatchStreamController<String>();
 
       var done = false;
-      first.stream.combineLatestAll([second.stream]).listen(null,
-          onDone: () => done = true);
+      first.stream.combineLatestAll([second.stream]).listen(null, onDone: () => done = true);
 
       // first:    -a---|
       // second:   --------1--|
@@ -120,8 +118,7 @@ void main() {
       test('can cancel and relisten to broadcast stream', () async {
         final first = SynchronousDispatchStreamController<String>.broadcast();
         final second = SynchronousDispatchStreamController<String>.broadcast();
-        final combined = first.stream
-            .combineLatestAll([second.stream]).map((data) => data.join());
+        final combined = first.stream.combineLatestAll([second.stream]).map((data) => data.join());
 
         // first:    a------b----------------c------d----e---|
         // second:   --1---------2---3---4------5-|

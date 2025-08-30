@@ -54,8 +54,7 @@ void main() {
       test('can return a Stream of futures when specified', () async {
         var source = Stream.fromIterable([1, 2]);
         Future<int> sum(Future<int> x, int y) async => (await x) + y;
-        var result =
-            await source.scan<Future<int>>(Future.value(0), sum).toList();
+        var result = await source.scan<Future<int>>(Future.value(0), sum).toList();
 
         expect(result, [
           const TypeMatcher<Future<void>>(),
