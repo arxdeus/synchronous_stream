@@ -54,6 +54,7 @@ final class SynchronousDispatchStreamControllerImpl<T>
   bool _isClosed = false;
   int _notificationDepth = 0;
   bool _needsSweepAfterNotify = false;
+
   int _pendingAddStreamsCount = 0;
   final Completer<void> _doneCompleter = Completer<void>();
 
@@ -213,7 +214,6 @@ final class SynchronousDispatchStreamControllerImpl<T>
       final NotifierStreamSubscription<T> subscription = NotifierStreamSubscription<T>(
         controller: this,
         cancelOnError: cancelThisOnError,
-        isBroadcast: false,
         onData: onData,
         onError: onError,
         onDone: onDone,
@@ -241,7 +241,6 @@ final class SynchronousDispatchStreamControllerImpl<T>
     final NotifierStreamSubscription<T> subscription = NotifierStreamSubscription<T>(
       controller: this,
       cancelOnError: cancelThisOnError,
-      isBroadcast: true,
       onData: onData,
       onError: onError,
       onDone: onDone,
@@ -345,8 +344,8 @@ final class SynchronousDispatchStreamControllerImpl<T>
   void _notifyErrorBroadcast(Object error, StackTrace? maybeStack) {
     _beginNotify();
 
-    StackTrace? cachedStackTrace;
-    StackTrace ensureStack() => cachedStackTrace ??= maybeStack ?? StackTrace.current;
+    late final errorStack = error is Error ? error.stackTrace : null;
+    final stackTrace = maybeStack ?? errorStack ?? StackTrace.empty;
 
     final int length = _broadcastSubscriptions.length;
     for (var index = 0; index < length; index++) {
@@ -354,9 +353,9 @@ final class SynchronousDispatchStreamControllerImpl<T>
       if (subscription.isCanceled) continue;
 
       if (subscription.onErrorCallback != null) {
-        subscription.deliverErrorBroadcast(error, ensureStack());
+        subscription.deliverErrorBroadcast(error, stackTrace);
       } else {
-        subscription.reportUnhandled(error, ensureStack());
+        subscription.reportUnhandled(error, stackTrace);
       }
     }
 

@@ -9,7 +9,6 @@ class NotifierStreamSubscription<T> implements StreamSubscription<T> {
   NotifierStreamSubscription({
     required this.controller,
     required this.cancelOnError,
-    required this.isBroadcast,
     DataHandler<T>? onData,
     ErrorHandler? onError,
     DoneHandler? onDone,
@@ -19,7 +18,6 @@ class NotifierStreamSubscription<T> implements StreamSubscription<T> {
 
   final SynchronousDispatchStreamControllerImpl<T> controller;
   final bool cancelOnError;
-  final bool isBroadcast;
 
   DataHandler<T>? _onData;
   ErrorHandler? onErrorCallback;
@@ -28,6 +26,8 @@ class NotifierStreamSubscription<T> implements StreamSubscription<T> {
   int pauseCount = 0;
   bool isCanceled = false;
   bool isDoneSent = false;
+
+  bool get isBroadcast => controller.isBroadcast;
 
   int broadcastIndex = -1;
 
@@ -141,9 +141,9 @@ class NotifierStreamSubscription<T> implements StreamSubscription<T> {
         ..add(error);
       return;
     }
-
+    late final errorStack = error is Error ? error.stackTrace : null;
+    final StackTrace stackTrace = maybeStackTrace ?? errorStack ?? StackTrace.empty;
     if (onErrorCallback != null) {
-      final StackTrace stackTrace = maybeStackTrace ?? StackTrace.current;
       try {
         onErrorCallback!(error, stackTrace);
       } catch (handlerError, handlerStack) {
@@ -155,7 +155,7 @@ class NotifierStreamSubscription<T> implements StreamSubscription<T> {
       return;
     }
 
-    reportUnhandled(error, maybeStackTrace ?? StackTrace.current);
+    reportUnhandled(error, stackTrace);
   }
 
   @pragma('vm:prefer-inline')
