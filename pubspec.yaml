@@ -1,6 +1,6 @@
 name: synchronous_stream
 description: Synchronous notifier that implements `StreamController` variant with O(1) broadcast unsubscription (swap-remove) and compact tagged queues (pre-listen/pause) with lazy stack-trace capture and allocation-lean hot paths
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/arxdeus/synchronous_stream
 repository: https://github.com/arxdeus/synchronous_stream
 issue_tracker: https://github.com/arxdeus/synchronous_stream/issues
