@@ -47,7 +47,7 @@ jobs:
         id: create-tag
         run: |
           git fetch --prune
-          git checkout main
+          git checkout master
           git pull
           git tag ${{ steps.parse-meta.outputs.package-tag }}
           git push origin ${{ steps.parse-meta.outputs.package-tag }}

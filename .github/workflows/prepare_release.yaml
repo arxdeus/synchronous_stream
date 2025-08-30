@@ -46,7 +46,7 @@ jobs:
             -u \
             --tag ${{ inputs.package-version }} \
             --prepend CHANGELOG.md \
-            origin/main..$(git describe --tags --match="v*" origin/main)
+            origin/master..$(git describe --tags --match="v*" origin/master)
 
       - name: Set up version from tags
         id: set-version
@@ -71,7 +71,7 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT }}
         run: |
           gh pr create \
-          -B main \
+          -B master \
           -l "release" \
           --no-maintainer-edit \
           -F ${{ steps.git-cliff.outputs.changelog }} \

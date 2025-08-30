@@ -6,4 +6,4 @@ updates:
       interval: "weekly"
     pull-request-branch-name:
       separator: /
-    target-branch: "main"
+    target-branch: "master"
