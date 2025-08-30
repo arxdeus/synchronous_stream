@@ -28,7 +28,7 @@ import 'dart:async';
 import 'package:notifier_stream_controller2/notifier_stream_controller2.dart';
 
 Future<void> main() async {
-  final controller = NotifierStreamController2<int>(
+  final controller = SynchronousDispatchStreamController<int>(
     onListen: () => print('onListen'),
     onPause: () => print('onPause'),
     onResume: () => print('onResume'),
