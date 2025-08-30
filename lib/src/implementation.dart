@@ -21,6 +21,7 @@ final class SynchronousDispatchStreamControllerImpl<T>
       : isBroadcast = true;
 
   /// Whether this controller operates in broadcast mode.
+  @override
   final bool isBroadcast;
 
   @override
