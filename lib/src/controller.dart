@@ -37,24 +37,4 @@ abstract interface class SynchronousDispatchStreamController<T> implements Strea
 
   /// Whether this controller operates in broadcast mode.
   bool get isBroadcast;
-
-  @override
-  void Function()? get onListen;
-
-  @override
-  void Function()? get onPause;
-
-  @override
-  void Function()? get onResume;
-
-  @override
-  FutureOr<void> Function()? get onCancel;
-
-  /// The stream that consumers listen to.
-  @override
-  Stream<T> get stream;
-
-  /// The sink used to add events, errors, and to close the controller.
-  @override
-  StreamSink<T> get sink;
 }
