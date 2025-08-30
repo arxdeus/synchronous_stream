@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2](https://github.com/arxdeus/synchronous_stream/compare/v1.0.1..1.0.2) - 2025-08-30
+
+### Bug Fixes
+
+- **(error)** error handling speed regression (#3) - ([e13e85d](https://github.com/arxdeus/synchronous_stream/commit/e13e85d943c7c9d8a65fd6d5e77bc7e12bedf065))
+
 ## [1.0.1](https://github.com/arxdeus/synchronous_stream/compare/v1.0.0..1.0.1) - 2025-08-30
 
 ### Bug Fixes
