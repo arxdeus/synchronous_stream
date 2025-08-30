@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:synchronous_stream/src/controller.dart';
+import 'package:synchronous_stream/src/implementation.dart';
 import 'package:synchronous_stream/src/internal.dart';
 
 class NotifierStream<T> extends Stream<T> {
   NotifierStream(this.controller);
 
-  final SynchronousDispatchStreamController<T> controller;
+  final SynchronousDispatchStreamControllerImpl<T> controller;
 
   @override
   bool get isBroadcast => controller.isBroadcast;
@@ -18,22 +18,16 @@ class NotifierStream<T> extends Stream<T> {
     void Function()? onDone,
     bool? cancelOnError,
   }) {
-    ErrorHandler? unifiedErrorHandler;
-
-    if (onError != null) {
-      if (onError is void Function(Object)) {
-        final void Function(Object) unary = onError;
-        unifiedErrorHandler = (Object error, StackTrace _) => unary(error);
-      } else if (onError is void Function(Object, StackTrace)) {
-        unifiedErrorHandler = onError;
-      } else {
-        throw ArgumentError.value(
+    final ErrorHandler? unifiedErrorHandler = switch (onError) {
+      void Function(Object) _ => (error, _) => onError(error),
+      void Function(Object, StackTrace) _ => onError,
+      null => null,
+      _ => throw ArgumentError.value(
           onError,
           'onError',
           'Must be void Function(Object) or void Function(Object, StackTrace)',
-        );
-      }
-    }
+        ),
+    };
 
     return controller.addSubscription(
       onData: onData,

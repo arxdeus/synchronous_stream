@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:synchronous_stream/src/controller.dart';
+import 'package:synchronous_stream/src/implementation.dart';
 import 'package:synchronous_stream/src/internal.dart';
 
 @internal
@@ -17,7 +17,7 @@ class NotifierStreamSubscription<T> implements StreamSubscription<T> {
         onErrorCallback = onError,
         _onDone = onDone;
 
-  final SynchronousDispatchStreamController<T> controller;
+  final SynchronousDispatchStreamControllerImpl<T> controller;
   final bool cancelOnError;
   final bool isBroadcast;
 
