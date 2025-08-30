@@ -1,0 +1,31 @@
+name: synchronous_stream
+description: Synchronous stream
+version: 1.0.0
+homepage: https://github.com/arxdeus/synchronous_stream
+repository: https://github.com/arxdeus/synchronous_stream
+issue_tracker: https://github.com/arxdeus/synchronous_stream/issues
+
+topics:
+  - architecture
+  - stream
+  - reactivity
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  meta: ^1.14.0
+dev_dependencies:
+  fake_async: ^1.3.3
+  stream_transform: ^2.1.1
+  test: ^1.26.3
+
+
