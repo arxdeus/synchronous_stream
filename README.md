@@ -1,12 +1,11 @@
 # SynchronousDispatchStreamController
 
-High-performance drop-in replacement for `StreamController` with optimized single-subscription and broadcast modes.
+Synchronous notifier that implements `StreamController` variant with O(1) broadcast unsubscription (swap-remove) and compact tagged queues (pre-listen/pause) with lazy stack-trace capture and allocation-lean hot paths
 
-- **Pre-listen buffering (single)** — events are cached until the first listener subscribes.
-- **O(1) broadcast unsubscription** — swap-remove keeps the subscriber list dense.
-- **Per-subscription `cancelOnError`** — each listener can decide independently.
-- **Unified error handler** — accepts either `(Object)` or `(Object, StackTrace)`.
-
+- **O(1) broadcast unsubscription (swap-remove)** with a deferred sweep that avoids modifying the subscriber list mid-notification
+- **Compact tagged queues** for pre-listen and paused delivery (`[tag, payload?]`) to reduce allocations and branch costs
+- **Lazy stack-trace capture for errors** - a `StackTrace` is produced only if at least one listener requests it
+- **Allocation-lean hot paths** for data/error/done to minimize overhead in tight event loops
 
 ## Installation
 
