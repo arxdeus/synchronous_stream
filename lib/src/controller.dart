@@ -71,9 +71,8 @@ class SynchronousDispatchStreamController<T> implements StreamController<T> {
 
   /// Whether the stream has any listeners.
   @override
-  bool get hasListener => isBroadcast
-      ? _broadcastSubscriptions.isNotEmpty
-      : _singleSubscription != null;
+  bool get hasListener =>
+      isBroadcast ? _broadcastSubscriptions.isNotEmpty : _singleSubscription != null;
 
   /// Whether the single-subscription stream is currently paused.
   ///
@@ -216,8 +215,7 @@ class SynchronousDispatchStreamController<T> implements StreamController<T> {
         throw StateError('Single-subscription stream already has a listener');
       }
 
-      final NotifierStreamSubscription<T> subscription =
-          NotifierStreamSubscription<T>(
+      final NotifierStreamSubscription<T> subscription = NotifierStreamSubscription<T>(
         controller: this,
         cancelOnError: cancelThisOnError,
         isBroadcast: false,
@@ -245,8 +243,7 @@ class SynchronousDispatchStreamController<T> implements StreamController<T> {
 
     final bool hadNoListeners = _broadcastSubscriptions.isEmpty;
 
-    final NotifierStreamSubscription<T> subscription =
-        NotifierStreamSubscription<T>(
+    final NotifierStreamSubscription<T> subscription = NotifierStreamSubscription<T>(
       controller: this,
       cancelOnError: cancelThisOnError,
       isBroadcast: true,
@@ -289,8 +286,7 @@ class SynchronousDispatchStreamController<T> implements StreamController<T> {
     if (index >= 0 &&
         index < _broadcastSubscriptions.length &&
         identical(_broadcastSubscriptions[index], subscription)) {
-      final NotifierStreamSubscription<T> last =
-          _broadcastSubscriptions.removeLast();
+      final NotifierStreamSubscription<T> last = _broadcastSubscriptions.removeLast();
       if (!identical(last, subscription)) {
         _broadcastSubscriptions[index] = last;
         last.broadcastIndex = index;
@@ -317,11 +313,9 @@ class SynchronousDispatchStreamController<T> implements StreamController<T> {
 
       int index = 0;
       while (index < _broadcastSubscriptions.length) {
-        final NotifierStreamSubscription<T> subscription =
-            _broadcastSubscriptions[index];
+        final NotifierStreamSubscription<T> subscription = _broadcastSubscriptions[index];
         if (subscription.isCanceled) {
-          final NotifierStreamSubscription<T> last =
-              _broadcastSubscriptions.removeLast();
+          final NotifierStreamSubscription<T> last = _broadcastSubscriptions.removeLast();
           if (!identical(last, subscription)) {
             _broadcastSubscriptions[index] = last;
             last.broadcastIndex = index;
@@ -357,8 +351,7 @@ class SynchronousDispatchStreamController<T> implements StreamController<T> {
     _beginNotify();
 
     StackTrace? cachedStackTrace;
-    StackTrace ensureStack() =>
-        cachedStackTrace ??= maybeStack ?? StackTrace.current;
+    StackTrace ensureStack() => cachedStackTrace ??= maybeStack ?? StackTrace.current;
 
     final int length = _broadcastSubscriptions.length;
     for (var index = 0; index < length; index++) {
@@ -390,9 +383,7 @@ class SynchronousDispatchStreamController<T> implements StreamController<T> {
 
   @pragma('vm:prefer-inline')
   void _maybeCompleteDone() {
-    if (_isClosed &&
-        _pendingAddStreamsCount == 0 &&
-        !_doneCompleter.isCompleted) {
+    if (_isClosed && _pendingAddStreamsCount == 0 && !_doneCompleter.isCompleted) {
       _doneCompleter.complete();
     }
   }

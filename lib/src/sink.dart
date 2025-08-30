@@ -15,8 +15,7 @@ class ControllerSink<T> implements StreamSink<T> {
 
   @pragma('vm:prefer-inline')
   @override
-  void addError(Object error, [StackTrace? stackTrace]) =>
-      controller.addError(error, stackTrace);
+  void addError(Object error, [StackTrace? stackTrace]) => controller.addError(error, stackTrace);
 
   @override
   Future<void> addStream(Stream<T> stream) => controller.addStream(stream);

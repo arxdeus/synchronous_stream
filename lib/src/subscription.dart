@@ -50,8 +50,7 @@ class NotifierStreamSubscription<T> implements StreamSubscription<T> {
   void onData(void Function(T data)? handleData) => _onData = handleData;
 
   @override
-  void onError(Function? handleError) =>
-      onErrorCallback = switch (handleError) {
+  void onError(Function? handleError) => onErrorCallback = switch (handleError) {
         void Function(Object, StackTrace) _ => handleError,
         void Function(Object) _ => (error, _) => handleError(error),
         null => null,
@@ -81,9 +80,7 @@ class NotifierStreamSubscription<T> implements StreamSubscription<T> {
     if (pauseCount == 0) {
       controller.onResume?.call();
 
-      if (_singleTaggedQueue != null &&
-          _singleTaggedQueue!.isNotEmpty &&
-          !isCanceled) {
+      if (_singleTaggedQueue != null && _singleTaggedQueue!.isNotEmpty && !isCanceled) {
         final List<Object?> detachedQueue = _singleTaggedQueue!;
         _singleTaggedQueue = null;
         drainSingleTaggedQueue(detachedQueue);
