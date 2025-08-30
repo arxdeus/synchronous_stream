@@ -1,4 +1,4 @@
-name: Prepare to release
+name: Prepare to create release
 permissions:
   contents: write
   checks: write

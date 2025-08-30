@@ -1,4 +1,4 @@
-name: Create tag after release
+name: Create tag after release creation
 
 on:
   pull_request:
