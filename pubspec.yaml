@@ -1,5 +1,5 @@
 name: synchronous_stream
-description: Synchronous stream
+description: Synchronous high-performance drop-in replacement for StreamController
 version: 1.0.0
 homepage: https://github.com/arxdeus/synchronous_stream
 repository: https://github.com/arxdeus/synchronous_stream
