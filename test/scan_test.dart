@@ -4,9 +4,8 @@
 
 import 'dart:async';
 
-import 'package:synchronous_stream/src/controller.dart';
-
 import 'package:stream_transform/stream_transform.dart';
+import 'package:synchronous_stream/synchronous_stream.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -56,11 +55,36 @@ void main() {
         Future<int> sum(Future<int> x, int y) async => (await x) + y;
         var result = await source.scan<Future<int>>(Future.value(0), sum).toList();
 
-        expect(result, [
-          const TypeMatcher<Future<void>>(),
-          const TypeMatcher<Future<void>>(),
-        ]);
+        expect(result, [const TypeMatcher<Future<void>>(), const TypeMatcher<Future<void>>()]);
         expect(await result.wait, [1, 3]);
+      });
+
+      test('does not call for subsequent values while waiting', () async {
+        var source = SynchronousDispatchStreamController<int>();
+
+        var calledWith = <int>[];
+        var block = Completer<void>();
+        Future<int> combine(int x, int y) async {
+          calledWith.add(y);
+          await block.future;
+          return x + y;
+        }
+
+        var results = <int>[];
+
+        unawaited(source.stream.scan(0, combine).forEach(results.add));
+
+        source
+          ..add(1)
+          ..add(2);
+        await Future(() {});
+        expect(calledWith, [1]);
+        expect(results, isEmpty);
+
+        block.complete();
+        await Future(() {});
+        expect(calledWith, [1, 2]);
+        expect(results, [1, 3]);
       });
 
       test('forwards async errors', () async {

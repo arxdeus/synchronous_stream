@@ -4,9 +4,8 @@
 
 import 'dart:async';
 
-import 'package:synchronous_stream/src/controller.dart';
-
 import 'package:stream_transform/stream_transform.dart';
+import 'package:synchronous_stream/synchronous_stream.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -17,9 +16,7 @@ void main() {
       int sum(int a, int b) => a + b;
 
       var results = <int>[];
-      unawaited(
-        source.stream.combineLatest(other.stream, sum).forEach(results.add),
-      );
+      unawaited(source.stream.combineLatest(other.stream, sum).forEach(results.add));
 
       source.add(1);
       await Future(() {});
@@ -43,14 +40,12 @@ void main() {
     });
 
     test('can combine different typed streams', () async {
-      var source = StreamController<String>();
+      var source = SynchronousDispatchStreamController<String>();
       var other = SynchronousDispatchStreamController<int>();
       String times(String a, int b) => a * b;
 
       var results = <String>[];
-      unawaited(
-        source.stream.combineLatest(other.stream, times).forEach(results.add),
-      );
+      unawaited(source.stream.combineLatest(other.stream, times).forEach(results.add));
 
       source
         ..add('a')
@@ -90,22 +85,19 @@ void main() {
       expect(done, true);
     });
 
-    test(
-      'ends if source stream closes without ever emitting a value',
-      () async {
-        var source = const Stream<int>.empty();
-        var other = SynchronousDispatchStreamController<int>();
+    test('ends if source stream closes without ever emitting a value', () async {
+      var source = const Stream<int>.empty();
+      var other = SynchronousDispatchStreamController<int>();
 
-        int sum(int a, int b) => a + b;
+      int sum(int a, int b) => a + b;
 
-        var done = false;
-        source.combineLatest(other.stream, sum).listen(null, onDone: () => done = true);
+      var done = false;
+      source.combineLatest(other.stream, sum).listen(null, onDone: () => done = true);
 
-        await Future(() {});
-        // Nothing can ever be emitted on the result, may as well close.
-        expect(done, true);
-      },
-    );
+      await Future(() {});
+      // Nothing can ever be emitted on the result, may as well close.
+      expect(done, true);
+    });
 
     test('ends if other stream closes without ever emitting a value', () async {
       var source = SynchronousDispatchStreamController<int>();
@@ -143,7 +135,7 @@ void main() {
     group('broadcast source', () {
       test('can cancel and relisten to broadcast stream', () async {
         var source = SynchronousDispatchStreamController<int>.broadcast();
-        var other = SynchronousDispatchStreamController<int>.broadcast();
+        var other = SynchronousDispatchStreamController<int>();
         int combine(int a, int b) => a + b;
 
         var emittedValues = <int>[];

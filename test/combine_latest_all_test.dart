@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:stream_transform/stream_transform.dart';
-import 'package:synchronous_stream/src/controller.dart';
+import 'package:synchronous_stream/synchronous_stream.dart';
 import 'package:test/test.dart';
 
 Future<void> tick() => Future(() {});
@@ -24,10 +24,7 @@ void main() {
       // third:    -------&----------%---|
       // combined: -------b1&--b2&---b2%---c2%------d2%-|
 
-      expect(
-        combined,
-        emitsInOrder(['b1&', 'b2&', 'b2%', 'c2%', 'd2%', emitsDone]),
-      );
+      expect(combined, emitsInOrder(['b1&', 'b2&', 'b2%', 'c2%', 'd2%', emitsDone]));
 
       first.add('a');
       await tick();

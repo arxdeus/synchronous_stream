@@ -11,8 +11,8 @@ import 'utils.dart';
 
 void main() {
   test('forwards errors from the convert callback', () async {
-    final errors = <String>[];
-    final source = Stream.fromIterable([1, 2, 3]);
+    var errors = <String>[];
+    var source = Stream.fromIterable([1, 2, 3]);
     source.concurrentAsyncExpand<void>((i) {
       // ignore: only_throw_errors
       throw 'Error: $i';
@@ -21,8 +21,8 @@ void main() {
     expect(errors, ['Error: 1', 'Error: 2', 'Error: 3']);
   });
 
-  for (final outerType in streamTypes) {
-    for (final innerType in streamTypes) {
+  for (var outerType in streamTypes) {
+    for (var innerType in streamTypes) {
       group('concurrentAsyncExpand $outerType to $innerType', () {
         late StreamController<int> outerController;
         late bool outerCanceled;
@@ -46,23 +46,17 @@ void main() {
           errors = [];
           isDone = false;
           transformed = outerController.stream.concurrentAsyncExpand((i) {
-            final index = innerControllers.length;
+            var index = innerControllers.length;
             innerCanceled.add(false);
-            innerControllers.add(
-              createController<String>(innerType)
-                ..onCancel = () {
-                  innerCanceled[index] = true;
-                },
-            );
+            innerControllers.add(createController<String>(innerType)
+              ..onCancel = () {
+                innerCanceled[index] = true;
+              });
             return innerControllers.last.stream;
           });
-          subscription = transformed.listen(
-            emittedValues.add,
-            onError: errors.add,
-            onDone: () {
-              isDone = true;
-            },
-          );
+          subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
+            isDone = true;
+          });
         });
 
         test('interleaves events from sub streams', () async {
@@ -96,19 +90,16 @@ void main() {
           expect(errors, ['Error 1', 'Error 2']);
         });
 
-        test(
-          'can continue handling events after an error in outer stream',
-          () async {
-            outerController
-              ..addError('Error')
-              ..add(1);
-            await Future<void>(() {});
-            innerControllers[0].add('First');
-            await Future<void>(() {});
-            expect(emittedValues, ['First']);
-            expect(errors, ['Error']);
-          },
-        );
+        test('can continue handling events after an error in outer stream', () async {
+          outerController
+            ..addError('Error')
+            ..add(1);
+          await Future<void>(() {});
+          innerControllers[0].add('First');
+          await Future<void>(() {});
+          expect(emittedValues, ['First']);
+          expect(errors, ['Error']);
+        });
 
         test('cancels outer subscription if output canceled', () async {
           await subscription.cancel();
@@ -154,7 +145,7 @@ void main() {
 
         if (outerType == 'broadcast') {
           test('multiple listerns all get values', () async {
-            final otherValues = <String>[];
+            var otherValues = <String>[];
             transformed.listen(otherValues.add);
             outerController.add(1);
             await Future<void>(() {});

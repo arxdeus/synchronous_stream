@@ -33,12 +33,9 @@ void main() {
         });
 
         void listen() {
-          subscription = transformed.listen(
-            emittedValues.add,
-            onDone: () {
-              isDone = true;
-            },
-          );
+          subscription = transformed.listen(emittedValues.add, onDone: () {
+            isDone = true;
+          });
         }
 
         test('cancels values', () async {
@@ -108,18 +105,12 @@ void main() {
             };
           emittedValues = [];
           isDone = false;
-          transformed = values.stream.throttle(
-            const Duration(milliseconds: 5),
-            trailing: true,
-          );
+          transformed = values.stream.throttle(const Duration(milliseconds: 5), trailing: true);
         });
         void listen() {
-          subscription = transformed.listen(
-            emittedValues.add,
-            onDone: () {
-              isDone = true;
-            },
-          );
+          subscription = transformed.listen(emittedValues.add, onDone: () {
+            isDone = true;
+          });
         }
 
         test('emits both first and last in a period', () {
@@ -147,29 +138,22 @@ void main() {
           });
         });
 
-        test(
-          'waits to output the last value even if the stream closes',
-          () async {
-            fakeAsync((async) {
-              listen();
-              values
-                ..add(1)
-                ..add(2)
-                ..close();
-              async.flushMicrotasks();
-              expect(isDone, false);
-              expect(
-                emittedValues,
-                [1],
-                reason: 'Should not be emitted until after duration',
-              );
-              async.elapse(const Duration(milliseconds: 6));
-              expect(emittedValues, [1, 2]);
-              expect(isDone, true);
-              async.elapse(const Duration(milliseconds: 6));
-            });
-          },
-        );
+        test('waits to output the last value even if the stream closes', () async {
+          fakeAsync((async) {
+            listen();
+            values
+              ..add(1)
+              ..add(2)
+              ..close();
+            async.flushMicrotasks();
+            expect(isDone, false);
+            expect(emittedValues, [1], reason: 'Should not be emitted until after duration');
+            async.elapse(const Duration(milliseconds: 6));
+            expect(emittedValues, [1, 2]);
+            expect(isDone, true);
+            async.elapse(const Duration(milliseconds: 6));
+          });
+        });
 
         test('closes immediately if there is no pending value', () {
           fakeAsync((async) {

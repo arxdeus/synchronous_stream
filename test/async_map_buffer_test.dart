@@ -24,13 +24,9 @@ void main() {
   /// Represents the async `convert` function and asserts that is is only called
   /// after the previous iteration has completed.
   Future<String> work(List<int> values) {
-    expect(
-      finishWork,
-      isNull,
-      reason: 'See $values befor previous work is complete',
-    );
+    expect(finishWork, isNull, reason: 'See $values befor previous work is complete');
     workArgument = values;
-    finishWork = Completer.sync()
+    finishWork = Completer()
       ..future.then((_) {
         workArgument = null;
         finishWork = null;
@@ -55,13 +51,9 @@ void main() {
         finishWork = null;
         workArgument = null;
         transformed = values.stream.asyncMapBuffer(work);
-        subscription = transformed.listen(
-          emittedValues.add,
-          onError: errors.add,
-          onDone: () {
-            isDone = true;
-          },
-        );
+        subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
+          isDone = true;
+        });
       });
 
       test('does not emit before work finishes', () async {
@@ -114,20 +106,17 @@ void main() {
         expect(errors, ['error', 'another']);
       });
 
-      test(
-        'does not start next work early due to an error in values',
-        () async {
-          values.add(1);
-          await Future(() {});
-          values
-            ..addError('error')
-            ..add(2);
-          await Future(() {});
-          expect(errors, ['error']);
-          // [work] will assert that the second iteration is not called because
-          // the first has not completed.
-        },
-      );
+      test('does not start next work early due to an error in values', () async {
+        values.add(1);
+        await Future(() {});
+        values
+          ..addError('error')
+          ..add(2);
+        await Future(() {});
+        expect(errors, ['error']);
+        // [work] will assert that the second iteration is not called because
+        // the first has not completed.
+      });
 
       test('cancels value subscription when output canceled', () async {
         expect(valuesCanceled, false);

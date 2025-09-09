@@ -13,12 +13,8 @@ StreamController<T> createController<T>(String streamType) {
     case 'broadcast':
       return SynchronousDispatchStreamController<T>.broadcast();
     default:
-      throw ArgumentError.value(
-        streamType,
-        'streamType',
-        'Must be one of $streamTypes',
-      );
+      throw ArgumentError.value(streamType, 'streamType', 'Must be one of $streamTypes');
   }
 }
 
-const streamTypes = ['broadcast'];
+const streamTypes = ['single subscription', 'broadcast'];

@@ -4,8 +4,6 @@
 
 import 'dart:async';
 
-import 'package:synchronous_stream/src/controller.dart';
-
 import 'package:stream_transform/stream_transform.dart';
 import 'package:test/test.dart';
 
@@ -23,7 +21,7 @@ void main() {
   });
 
   test('forwards values to multiple listeners', () async {
-    var values = SynchronousDispatchStreamController<Object>.broadcast();
+    var values = StreamController<Object>.broadcast();
     var filtered = values.stream.whereType<String>();
     var firstValues = <Object>[];
     var secondValues = <Object>[];
@@ -41,7 +39,7 @@ void main() {
   });
 
   test('closes streams with multiple listeners', () async {
-    var values = SynchronousDispatchStreamController<Object>.broadcast();
+    var values = StreamController<Object>.broadcast();
     var filtered = values.stream.whereType<String>();
     var firstDone = false;
     var secondDone = false;

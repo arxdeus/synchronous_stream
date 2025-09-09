@@ -4,9 +4,8 @@
 
 import 'dart:async';
 
-import 'package:synchronous_stream/src/controller.dart';
-
 import 'package:stream_transform/stream_transform.dart';
+import 'package:synchronous_stream/synchronous_stream.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -26,12 +25,9 @@ void main() {
   test('calls function for errors', () async {
     dynamic error;
     var source = SynchronousDispatchStreamController<int>();
-    source.stream.tap(
-      (_) {},
-      onError: (e, st) {
-        error = e;
-      },
-    ).listen((_) {}, onError: (_) {});
+    source.stream.tap((_) {}, onError: (e, st) {
+      error = e;
+    }).listen((_) {}, onError: (_) {});
     source.addError('error');
     await Future(() {});
     expect(error, 'error');
@@ -40,12 +36,9 @@ void main() {
   test('forwards errors', () async {
     dynamic error;
     var source = SynchronousDispatchStreamController<int>();
-    source.stream.tap((_) {}, onError: (e, st) {}).listen(
-      (_) {},
-      onError: (Object e) {
-        error = e;
-      },
-    );
+    source.stream.tap((_) {}, onError: (e, st) {}).listen((_) {}, onError: (Object e) {
+      error = e;
+    });
     source.addError('error');
     await Future(() {});
     expect(error, 'error');
@@ -54,68 +47,50 @@ void main() {
   test('calls function on done', () async {
     var doneCalled = false;
     var source = SynchronousDispatchStreamController<int>();
-    source.stream.tap(
-      (_) {},
-      onDone: () {
-        doneCalled = true;
-      },
-    ).listen((_) {});
+    source.stream.tap((_) {}, onDone: () {
+      doneCalled = true;
+    }).listen((_) {});
     await source.close();
     expect(doneCalled, true);
   });
 
-  test(
-    'forwards only once with multiple listeners on a broadcast stream',
-    () async {
-      var dataCallCount = 0;
-      var source = SynchronousDispatchStreamController<int>.broadcast();
-      source.stream.tap((_) {
-        dataCallCount++;
-      })
-        ..listen((_) {})
-        ..listen((_) {});
-      source.add(1);
-      await Future(() {});
-      expect(dataCallCount, 1);
-    },
-  );
+  test('forwards only once with multiple listeners on a broadcast stream', () async {
+    var dataCallCount = 0;
+    var source = SynchronousDispatchStreamController<int>.broadcast();
+    source.stream.tap((_) {
+      dataCallCount++;
+    })
+      ..listen((_) {})
+      ..listen((_) {});
+    source.add(1);
+    await Future(() {});
+    expect(dataCallCount, 1);
+  });
 
-  test(
-    'forwards errors only once with multiple listeners on a broadcast stream',
-    () async {
-      var errorCallCount = 0;
-      var source = SynchronousDispatchStreamController<int>.broadcast();
-      source.stream.tap(
-        (_) {},
-        onError: (_, __) {
-          errorCallCount++;
-        },
-      )
-        ..listen((_) {}, onError: (_, __) {})
-        ..listen((_) {}, onError: (_, __) {});
-      source.addError('error');
-      await Future(() {});
-      expect(errorCallCount, 1);
-    },
-  );
+  test('forwards errors only once with multiple listeners on a broadcast stream', () async {
+    var errorCallCount = 0;
+    var source = SynchronousDispatchStreamController<int>.broadcast();
+    source.stream.tap((_) {}, onError: (_, __) {
+      errorCallCount++;
+    })
+      ..listen((_) {}, onError: (_, __) {})
+      ..listen((_) {}, onError: (_, __) {});
+    source.addError('error');
+    await Future(() {});
+    expect(errorCallCount, 1);
+  });
 
-  test(
-    'calls onDone only once with multiple listeners on a broadcast stream',
-    () async {
-      var doneCallCount = 0;
-      var source = SynchronousDispatchStreamController<int>.broadcast();
-      source.stream.tap(
-        (_) {},
-        onDone: () {
-          doneCallCount++;
-        },
-      )
-        ..listen((_) {})
-        ..listen((_) {});
-      await source.close();
-      expect(doneCallCount, 1);
-    },
-  );
+  test('calls onDone only once with multiple listeners on a broadcast stream', () async {
+    var doneCallCount = 0;
+    var source = SynchronousDispatchStreamController<int>.broadcast();
+    source.stream.tap((_) {}, onDone: () {
+      doneCallCount++;
+    })
+      ..listen((_) {})
+      ..listen((_) {});
+    await source.close();
+    expect(doneCallCount, 1);
+  });
 
   test('forwards values to multiple listeners', () async {
     var source = SynchronousDispatchStreamController<int>.broadcast();
