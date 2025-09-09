@@ -43,13 +43,9 @@ void main() {
           errors = [];
           isDone = false;
           transformed = first.stream.followedBy(second.stream);
-          subscription = transformed.listen(
-            emittedValues.add,
-            onError: errors.add,
-            onDone: () {
-              isDone = true;
-            },
-          );
+          subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
+            isDone = true;
+          });
         });
 
         test('adds all values from both streams', () async {
@@ -65,14 +61,11 @@ void main() {
           expect(emittedValues, [1, 2, 3, 4]);
         });
 
-        test(
-          'Does not listen to second stream before first stream finishes',
-          () async {
-            expect(secondListened, false);
-            await first.close();
-            expect(secondListened, true);
-          },
-        );
+        test('Does not listen to second stream before first stream finishes', () async {
+          expect(secondListened, false);
+          await first.close();
+          expect(secondListened, true);
+        });
 
         test('closes stream after both inputs close', () async {
           await first.close();
@@ -95,35 +88,27 @@ void main() {
           });
 
           if (secondType == 'broadcast') {
-            test(
-              'can pause and resume during second stream - dropping values',
-              () async {
-                await first.close();
-                subscription.pause();
-                await Future(() {});
-                second.add(1);
-                await Future(() {});
-                subscription.resume();
-                await Future(() {});
-                second.add(2);
-                await Future(() {});
-                expect(emittedValues, [2]);
-              },
-            );
+            test('can pause and resume during second stream - dropping values', () async {
+              await first.close();
+              subscription.pause();
+              second.add(1);
+              await Future(() {});
+              subscription.resume();
+              second.add(2);
+              await Future(() {});
+              expect(emittedValues, [2]);
+            });
           } else {
-            test(
-              'can pause and resume during second stream - buffering values',
-              () async {
-                await first.close();
-                subscription.pause();
-                second.add(1);
-                await Future(() {});
-                subscription.resume();
-                second.add(2);
-                await Future(() {});
-                expect(emittedValues, [1, 2]);
-              },
-            );
+            test('can pause and resume during second stream - buffering values', () async {
+              await first.close();
+              subscription.pause();
+              second.add(1);
+              await Future(() {});
+              subscription.resume();
+              second.add(2);
+              await Future(() {});
+              expect(emittedValues, [1, 2]);
+            });
           }
         }
 

@@ -21,11 +21,7 @@ void main() {
   late Stream<int> transformed;
   late StreamSubscription<int> subscription;
 
-  void setUpForStreamTypes(
-    String triggerType,
-    String valuesType, {
-    required bool longPoll,
-  }) {
+  void setUpForStreamTypes(String triggerType, String valuesType, {required bool longPoll}) {
     valuesCanceled = false;
     triggerCanceled = false;
     triggerPaused = false;
@@ -46,13 +42,9 @@ void main() {
     errors = [];
     isDone = false;
     transformed = values.stream.sample(trigger.stream, longPoll: longPoll);
-    subscription = transformed.listen(
-      emittedValues.add,
-      onError: errors.add,
-      onDone: () {
-        isDone = true;
-      },
-    );
+    subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
+      isDone = true;
+    });
   }
 
   for (var triggerType in streamTypes) {
@@ -78,7 +70,6 @@ void main() {
               ..add(2);
             await Future(() {});
             trigger.add(null);
-            await Future(() {});
             values
               ..add(3)
               ..add(4);
@@ -101,19 +92,16 @@ void main() {
             expect(isDone, true);
           });
 
-          test(
-            'closes after outputting final values when source closes',
-            () async {
-              expect(isDone, false);
-              values.add(1);
-              await values.close();
-              expect(isDone, false);
-              trigger.add(null);
-              await Future(() {});
-              expect(emittedValues, [1]);
-              expect(isDone, true);
-            },
-          );
+          test('closes after outputting final values when source closes', () async {
+            expect(isDone, false);
+            values.add(1);
+            await values.close();
+            expect(isDone, false);
+            trigger.add(null);
+            await Future(() {});
+            expect(emittedValues, [1]);
+            expect(isDone, true);
+          });
 
           test('closes when source closes and there is no pending', () async {
             expect(isDone, false);
@@ -149,22 +137,19 @@ void main() {
             expect(emittedValues, [1]);
           });
 
-          test(
-            'two triggers in a row - emit buffere then emit next value',
-            () async {
-              values
-                ..add(1)
-                ..add(2);
-              await Future(() {});
-              trigger
-                ..add(null)
-                ..add(null);
-              await Future(() {});
-              values.add(3);
-              await Future(() {});
-              expect(emittedValues, [2, 3]);
-            },
-          );
+          test('two triggers in a row - emit buffere then emit next value', () async {
+            values
+              ..add(1)
+              ..add(2);
+            await Future(() {});
+            trigger
+              ..add(null)
+              ..add(null);
+            await Future(() {});
+            values.add(3);
+            await Future(() {});
+            expect(emittedValues, [2, 3]);
+          });
 
           test('pre-emptive trigger then trigger after values', () async {
             trigger.add(null);
@@ -178,45 +163,36 @@ void main() {
             expect(emittedValues, [1, 2]);
           });
 
-          test(
-            'multiple pre-emptive triggers, only emits first value',
-            () async {
-              trigger
-                ..add(null)
-                ..add(null);
-              await Future(() {});
-              values
-                ..add(1)
-                ..add(2);
-              await Future(() {});
-              expect(emittedValues, [1]);
-            },
-          );
+          test('multiple pre-emptive triggers, only emits first value', () async {
+            trigger
+              ..add(null)
+              ..add(null);
+            await Future(() {});
+            values
+              ..add(1)
+              ..add(2);
+            await Future(() {});
+            expect(emittedValues, [1]);
+          });
 
-          test(
-            'closes if there is no waiting long poll when source closes',
-            () async {
-              expect(isDone, false);
-              values.add(1);
-              trigger.add(null);
-              await values.close();
-              await Future(() {});
-              expect(isDone, true);
-            },
-          );
+          test('closes if there is no waiting long poll when source closes', () async {
+            expect(isDone, false);
+            values.add(1);
+            trigger.add(null);
+            await values.close();
+            await Future(() {});
+            expect(isDone, true);
+          });
 
-          test(
-            'waits to emit if there waiting long poll when trigger closes',
-            () async {
-              trigger.add(null);
-              await trigger.close();
-              expect(isDone, false);
-              values.add(1);
-              await Future(() {});
-              expect(emittedValues, [1]);
-              expect(isDone, true);
-            },
-          );
+          test('waits to emit if there waiting long poll when trigger closes', () async {
+            trigger.add(null);
+            await trigger.close();
+            expect(isDone, false);
+            values.add(1);
+            await Future(() {});
+            expect(emittedValues, [1]);
+            expect(isDone, true);
+          });
         });
 
         group('immediate polling', () {
@@ -264,11 +240,7 @@ void main() {
     await subscription.cancel();
     expect(triggerCanceled, true);
 
-    setUpForStreamTypes(
-      'single subscription',
-      'single subscription',
-      longPoll: true,
-    );
+    setUpForStreamTypes('single subscription', 'single subscription', longPoll: true);
     expect(triggerCanceled, false);
     await subscription.cancel();
     expect(triggerCanceled, true);

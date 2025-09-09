@@ -4,9 +4,8 @@
 
 import 'dart:async';
 
-import 'package:synchronous_stream/src/controller.dart';
-
 import 'package:stream_transform/stream_transform.dart';
+import 'package:synchronous_stream/synchronous_stream.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -41,12 +40,9 @@ void main() {
       var first = SynchronousDispatchStreamController<int>();
       var second = SynchronousDispatchStreamController<int>();
       var isDone = false;
-      first.stream.merge(second.stream).listen(
-        (_) {},
-        onDone: () {
-          isDone = true;
-        },
-      );
+      first.stream.merge(second.stream).listen((_) {}, onDone: () {
+        isDone = true;
+      });
       await first.close();
       expect(isDone, false);
       await second.close();
@@ -55,7 +51,7 @@ void main() {
 
     test('can cancel and relisten to broadcast stream', () async {
       var first = SynchronousDispatchStreamController<int>.broadcast();
-      var second = SynchronousDispatchStreamController<int>.broadcast();
+      var second = SynchronousDispatchStreamController<int>();
       var emittedValues = <int>[];
       var transformed = first.stream.merge(second.stream);
       var subscription = transformed.listen(emittedValues.add);
@@ -99,15 +95,12 @@ void main() {
           secondBroadcastCanceled = true;
         };
       var secondSingleCanceled = false;
-      var secondSingle = StreamController<int>()
+      var secondSingle = SynchronousDispatchStreamController<int>()
         ..onCancel = () {
           secondSingleCanceled = true;
         };
 
-      var merged = first.stream.mergeAll([
-        secondBroadcast.stream,
-        secondSingle.stream,
-      ]);
+      var merged = first.stream.mergeAll([secondBroadcast.stream, secondSingle.stream]);
 
       var firstListenerValues = <int>[];
       var secondListenerValues = <int>[];
@@ -136,6 +129,9 @@ void main() {
       await Future(() {});
       expect(firstCanceled, true);
       expect(secondBroadcastCanceled, true);
+      expect(secondSingleCanceled, false,
+          reason: 'Single subscription streams merged into broadcast streams '
+              'are not canceled');
 
       expect(firstListenerValues, [1, 2, 3]);
       expect(secondListenerValues, [1, 2, 3, 4, 5, 6]);

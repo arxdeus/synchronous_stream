@@ -42,13 +42,9 @@ void main() {
         finishWork = [];
         values = [];
         transformed = controller.stream.concurrentAsyncMap(convert);
-        subscription = transformed.listen(
-          emittedValues.add,
-          onError: errors.add,
-          onDone: () {
-            isDone = true;
-          },
-        );
+        subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
+          isDone = true;
+        });
       });
 
       test('does not emit before convert finishes', () async {
@@ -70,16 +66,13 @@ void main() {
         expect(values, [1, 2, 3]);
       });
 
-      test(
-        'forwards errors directly without waiting for previous convert',
-        () async {
-          controller.add(1);
-          await Future(() {});
-          controller.addError('error');
-          await Future(() {});
-          expect(errors, ['error']);
-        },
-      );
+      test('forwards errors directly without waiting for previous convert', () async {
+        controller.add(1);
+        await Future(() {});
+        controller.addError('error');
+        await Future(() {});
+        expect(errors, ['error']);
+      });
 
       test('forwards errors which occur during the convert', () async {
         controller.add(1);

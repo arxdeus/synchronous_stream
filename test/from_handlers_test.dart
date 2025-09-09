@@ -4,8 +4,6 @@
 
 import 'dart:async';
 
-import 'package:synchronous_stream/src/controller.dart';
-
 import 'package:stream_transform/src/from_handlers.dart';
 import 'package:test/test.dart';
 
@@ -19,9 +17,7 @@ void main() {
   late StreamSubscription<int> subscription;
 
   void setUpForController(
-    StreamController<int> controller,
-    Stream<int> Function(Stream<int>) transform,
-  ) {
+      StreamController<int> controller, Stream<int> Function(Stream<int>) transform) {
     valuesCanceled = false;
     values = controller
       ..onCancel = () {
@@ -31,16 +27,47 @@ void main() {
     errors = [];
     isDone = false;
     transformed = transform(values.stream);
-    subscription = transformed.listen(
-      emittedValues.add,
-      onError: errors.add,
-      onDone: () {
-        isDone = true;
-      },
-    );
+    subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
+      isDone = true;
+    });
   }
 
   group('default from_handlers', () {
+    group('Single subscription stream', () {
+      setUp(() {
+        setUpForController(
+            StreamController(), (s) => s.transformByHandlers(onData: (e, sink) => sink.add(e)));
+      });
+
+      test('has correct stream type', () {
+        expect(transformed.isBroadcast, false);
+      });
+
+      test('forwards values', () async {
+        values
+          ..add(1)
+          ..add(2);
+        await Future(() {});
+        expect(emittedValues, [1, 2]);
+      });
+
+      test('forwards errors', () async {
+        values.addError('error');
+        await Future(() {});
+        expect(errors, ['error']);
+      });
+
+      test('forwards done', () async {
+        await values.close();
+        expect(isDone, true);
+      });
+
+      test('forwards cancel', () async {
+        await subscription.cancel();
+        expect(valuesCanceled, true);
+      });
+    });
+
     group('broadcast stream with muliple listeners', () {
       late List<int> emittedValues2;
       late List<String> errors2;
@@ -48,20 +75,14 @@ void main() {
       late StreamSubscription<int> subscription2;
 
       setUp(() {
-        setUpForController(
-          SynchronousDispatchStreamController.broadcast(),
-          (s) => s.transformByHandlers(onData: (e, sink) => sink.add(e)),
-        );
+        setUpForController(StreamController.broadcast(),
+            (s) => s.transformByHandlers(onData: (e, sink) => sink.add(e)));
         emittedValues2 = [];
         errors2 = [];
         isDone2 = false;
-        subscription2 = transformed.listen(
-          emittedValues2.add,
-          onError: errors2.add,
-          onDone: () {
-            isDone2 = true;
-          },
-        );
+        subscription2 = transformed.listen(emittedValues2.add, onError: errors2.add, onDone: () {
+          isDone2 = true;
+        });
       });
 
       test('has correct stream type', () {
@@ -103,13 +124,10 @@ void main() {
     group('single subscription', () {
       setUp(() async {
         setUpForController(
-          SynchronousDispatchStreamController(),
-          (s) => s.transformByHandlers(
-            onData: (value, sink) {
-              sink.add(value + 1);
-            },
-          ),
-        );
+            StreamController(),
+            (s) => s.transformByHandlers(onData: (value, sink) {
+                  sink.add(value + 1);
+                }));
       });
       test('uses transform from handleData', () async {
         values
@@ -130,20 +148,15 @@ void main() {
         doneCallCount = 0;
         errorCallCount = 0;
         setUpForController(
-          SynchronousDispatchStreamController.broadcast(),
-          (s) => s.transformByHandlers(
-            onData: (value, sink) {
-              dataCallCount++;
-            },
-            onError: (error, stackTrace, sink) {
-              errorCallCount++;
-              sink.addError(error, stackTrace);
-            },
-            onDone: (sink) {
-              doneCallCount++;
-            },
-          ),
-        );
+            StreamController.broadcast(),
+            (s) => s.transformByHandlers(onData: (value, sink) {
+                  dataCallCount++;
+                }, onError: (error, stackTrace, sink) {
+                  errorCallCount++;
+                  sink.addError(error, stackTrace);
+                }, onDone: (sink) {
+                  doneCallCount++;
+                }));
         transformed.listen((_) {}, onError: (_, __) {});
       });
 

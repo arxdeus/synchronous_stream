@@ -17,18 +17,12 @@ void main() {
   late List<int> emittedValues;
   late bool isDone;
 
-  void setupForStreamType(
-    String streamType,
-    Stream<int> Function(Stream<int>) transform,
-  ) {
+  void setupForStreamType(String streamType, Stream<int> Function(Stream<int>) transform) {
     emittedValues = [];
     isDone = false;
     values = createController(streamType);
     transformed = transform(values.stream);
-    subscription = transformed.listen(
-      emittedValues.add,
-      onDone: () => isDone = true,
-    );
+    subscription = transformed.listen(emittedValues.add, onDone: () => isDone = true);
   }
 
   for (var streamType in streamTypes) {
@@ -112,10 +106,7 @@ void main() {
         late StreamController<int> starting;
         setUp(() async {
           starting = createController(startingStreamType);
-          setupForStreamType(
-            streamType,
-            (s) => s.startWithStream(starting.stream),
-          );
+          setupForStreamType(streamType, (s) => s.startWithStream(starting.stream));
         });
 
         test('outputs all values', () async {

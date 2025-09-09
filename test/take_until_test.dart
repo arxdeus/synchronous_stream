@@ -30,15 +30,11 @@ void main() {
         emittedValues = [];
         errors = [];
         isDone = false;
-        closeTrigger = Completer.sync();
+        closeTrigger = Completer();
         transformed = values.stream.takeUntil(closeTrigger.future);
-        subscription = transformed.listen(
-          emittedValues.add,
-          onError: errors.add,
-          onDone: () {
-            isDone = true;
-          },
-        );
+        subscription = transformed.listen(emittedValues.add, onError: errors.add, onDone: () {
+          isDone = true;
+        });
       });
 
       test('forwards cancellation', () async {
@@ -78,15 +74,12 @@ void main() {
         expect(isDone, true);
       });
 
-      test(
-        'ignores errors from the close trigger after stream closed',
-        () async {
-          await values.close();
-          closeTrigger.completeError('sad');
-          await Future(() {});
-          expect(errors, <Object>[]);
-        },
-      );
+      test('ignores errors from the close trigger after stream closed', () async {
+        await values.close();
+        closeTrigger.completeError('sad');
+        await Future(() {});
+        expect(errors, <Object>[]);
+      });
 
       test('cancels value subscription when trigger fires', () async {
         closeTrigger.complete();
