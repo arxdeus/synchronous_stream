@@ -21,4 +21,4 @@ StreamController<T> createController<T>(String streamType) {
   }
 }
 
-const streamTypes = ['broadcast'];
+const streamTypes = ['single subscription', 'broadcast'];
